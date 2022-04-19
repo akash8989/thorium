@@ -32,9 +32,9 @@ const validstatus=function(status){
 const validInteger=function isInteger(value){
     return value % 1==0
 }
-const validSize = function (value) {
-    return ["S", "XS", "M", "X", "L", "XXL", "XL"].indexOf(value) !== -1
-}
+ const validSize = function (value) {
+     return ["S", "XS", "M", "X", "L", "XXL", "XL"].indexOf(value).length>0
+ }
 
 module.exports={
      isValid,
@@ -44,6 +44,6 @@ module.exports={
     validstring,
     isValidObjectId,
      isValidrequestBody,
-     validSize
+      validSize
 
 }

@@ -125,7 +125,8 @@ module.exports.getProductById = getProductById
 //================================================================================================
 const update = async function (req, res) {
     try {
-        let reqBody = req.body
+        //  let reqBody = req.body
+         const reqBody = JSON.parse(req.body.data)
         const { title, description, price, isFreeShipping, style, availableSizes, installments } = reqBody
         const findProduct = await ProductModel.findOne({ _id: req.params.productId, isDeleted: false })
         if (!findProduct) {
@@ -135,17 +136,21 @@ const update = async function (req, res) {
         if (files && files.length > 0) {
             //upload to s3 and return true..incase of error in uploading this will goto catch block( as rejected promise)
             let uploadedFileURL = await aws.uploadFile(files[0]); // expect this function to take file as input and give url of uploaded file as output 
-            //    res.status(201).send({ status: true, data: uploadedFileURL });
-        }
+                // res.status(201).send({ status: true, data: uploadedFileURL });
+        
         const ProductData = {
             title: title, description: description, price: price, currencyId: "₹", currencyFormat: "INR",
             isFreeShipping: isFreeShipping, productImage: uploadedFileURL,
             style: style, availableSizes: availableSizes, installments: installments
         }
+    
         let updateProduct = await ProductModel.findOneAndUpdate({ _id: req.params.productId },
             ProductData, { new: true })
         res.status(200).send({ status: true, msg: 'Success', update: { updateProduct } })
                console.log(updateProduct)
+        }else {
+            res.status(400).send({ status: false, msg: "Please upload a product image" });
+        }
 
     } catch (err) {
         res.status(500).send({ status: false, msg: err.message })
