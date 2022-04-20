@@ -155,7 +155,7 @@ const login = async function (req, res) {
             if (decryppasss) {
                 const Token = jwt.sign({
                     userId: User._id,
-                    iat: Math.floor(Date.now() / 1000), //issue date
+                    // iat: Math.floor(Date.now() / 1000), //issue date
                     // exp: Math.floor(Date.now() / 1000) + 30 * 60
                 }, "Group5") //exp date 30*60=30min
                 // res.header('x-api-key', Token)

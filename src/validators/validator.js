@@ -22,9 +22,9 @@ const validstring=function(value){
     return true
 }
 
-const isValidTitle=function(title){
-    return ["Mr","Mrs","Miss"].indexOf(title)!==-1
-}
+// const isValidTitle=function(title){
+//     return ["Mr","Mrs","Miss"].indexOf(title)!==-1
+// }
 
 const validstatus=function(status){
     return["pending","completed","cancelled"].indexOf(status)!==-1
@@ -33,14 +33,14 @@ const validInteger=function isInteger(value){
     return value % 1==0
 }
  const validSize = function (value) {
-     return ["S", "XS", "M", "X", "L", "XXL", "XL"].indexOf(value).length>0
+     return ["S", "XS", "M", "X", "L", "XXL", "XL"].indexOf(value).length!=-1
  }
 
 module.exports={
      isValid,
     validInteger,
     validstatus,
-    isValidTitle,
+    // isValidTitle,
     validstring,
     isValidObjectId,
      isValidrequestBody,

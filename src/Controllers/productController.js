@@ -123,11 +123,70 @@ const getProductById = async function (req, res) {
 }
 module.exports.getProductById = getProductById
 //================================================================================================
+// const update = async function (req, res) {
+//     try {
+//         //  let reqBody = req.body
+//          const reqBody = JSON.parse(req.body.data)
+//         const { title, description, price, isFreeShipping, style, availableSizes, installments } = reqBody
+//         const findProduct = await ProductModel.findOne({ _id: req.params.productId, isDeleted: false })
+//         if (!findProduct) {
+//             return res.status(404).send({ status: false, msg: "product id does not exists" })
+//         }
+//         let files = req.files;
+//         if (files && files.length > 0) {
+//             //upload to s3 and return true..incase of error in uploading this will goto catch block( as rejected promise)
+//             let uploadedFileURL = await aws.uploadFile(files[0]); // expect this function to take file as input and give url of uploaded file as output 
+//                 // res.status(201).send({ status: true, data: uploadedFileURL });
+        
+//         const ProductData = {
+//             title: title, description: description, price: price, currencyId: "₹", currencyFormat: "INR",
+//             isFreeShipping: isFreeShipping, productImage: uploadedFileURL,
+//             style: style, availableSizes: availableSizes, installments: installments
+//         }
+    
+//         let updateProduct = await ProductModel.findOneAndUpdate({ _id: req.params.productId },
+//             ProductData, { new: true })
+//         res.status(200).send({ status: true, msg: 'Success', update: { updateProduct } })
+//                console.log(updateProduct)
+//         }else {
+//             res.status(400).send({ status: false, msg: "Please upload a product image" });
+//         }
+
+//     } catch (err) {
+//         res.status(500).send({ status: false, msg: err.message })
+//     }
+// }
 const update = async function (req, res) {
     try {
-        //  let reqBody = req.body
-         const reqBody = JSON.parse(req.body.data)
+        // let reqBody = req.body
+        const reqBody = JSON.parse(req.body.data)
         const { title, description, price, isFreeShipping, style, availableSizes, installments } = reqBody
+        if (!validator.isValidrequestBody(reqBody)) {
+            return res.status(400).send({ status: false, msg: "Provide product details you want to update" })
+        }
+        if (!validator.isValid(title)) {
+            return res.status(400).send({ status: false, message: 'title is not valid' })
+
+        }
+        // if (!validator.isValidTitle(title)) {
+        //     return res.status(400).send({ status: false, message: `title is not valid.please provide ${title}` })
+        // }
+        if (!validator.validSize(availableSizes)) {
+            return res.status(400).send({ status: false, msg: "Size does not match" })
+        }
+        if (!validator.isValid(description)) {
+            return res.status(400).send({ status: false, message: 'description is not valid' })
+
+        }
+        if (typeof price != "number") {
+            return res.status(400).send({ status: false, message: 'Enter a valid price' })
+
+        }
+        // let lc = title.toLowerCase()
+        let findTitle = await ProductModel.find({ title: title.toLowerCase() })
+        if (findTitle.length != 0) {
+            res.status(400).send({ status: false, msg: "title already exists" })
+        }
         const findProduct = await ProductModel.findOne({ _id: req.params.productId, isDeleted: false })
         if (!findProduct) {
             return res.status(404).send({ status: false, msg: "product id does not exists" })
@@ -135,28 +194,25 @@ const update = async function (req, res) {
         let files = req.files;
         if (files && files.length > 0) {
             //upload to s3 and return true..incase of error in uploading this will goto catch block( as rejected promise)
-            let uploadedFileURL = await aws.uploadFile(files[0]); // expect this function to take file as input and give url of uploaded file as output 
-                // res.status(201).send({ status: true, data: uploadedFileURL });
-        
+            var uploadedFileURL = await uploadFile(files[0]); // expect this function to take file as input and give url of uploaded file as output 
+            //   res.status(201).send({ status: true, data: uploadedFileURL });
+        }
         const ProductData = {
             title: title, description: description, price: price, currencyId: "₹", currencyFormat: "INR",
             isFreeShipping: isFreeShipping, productImage: uploadedFileURL,
             style: style, availableSizes: availableSizes, installments: installments
         }
-    
         let updateProduct = await ProductModel.findOneAndUpdate({ _id: req.params.productId },
             ProductData, { new: true })
-        res.status(200).send({ status: true, msg: 'Success', update: { updateProduct } })
-               console.log(updateProduct)
-        }else {
-            res.status(400).send({ status: false, msg: "Please upload a product image" });
-        }
+        res.status(200).send({ status: true, msg: 'Success', data: { updateProduct } })
+
 
     } catch (err) {
         res.status(500).send({ status: false, msg: err.message })
     }
 }
 module.exports.update = update
+ module.exports.update = update
 //=========================================================================
 const productDel=async function (req, res){
     try{
