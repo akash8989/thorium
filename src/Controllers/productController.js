@@ -3,6 +3,7 @@ const ProductModel = require("../models/productModel")
 const mongoose = require("mongoose")
 const validator=require("../validators/validator")
 const aws=require("../validators/aws")
+// const currencySymbol = require("currency-symbol-map")
 
 //===============================================================================
 
@@ -11,7 +12,7 @@ const CreateProduct = async function (req, res) {
         const requestBody = req.body.data
         const JSONbody = JSON.parse(requestBody)
         console.log(JSONbody)
-        const { title, description, price, isFreeShipping, style, availableSizes, installments } = JSONbody
+        const { title, description, price,currencyId, isFreeShipping, style, availableSizes, installments } = JSONbody
         if (!validator.isValidrequestBody(JSONbody)) {
             return res.status(400).send({ status: false, msg: "Provide product details you want to update" })
         }
@@ -29,6 +30,19 @@ const CreateProduct = async function (req, res) {
             return res.status(400).send({ status: false, message: 'description is not valid' })
 
         }
+        if (!validator.isValid(currencyId)) {
+            return res.status(400).send({ status: false, message: "currencyId is required" })
+        }
+
+        if (currencyId != "INR") {
+            return res.status(400).send({ status: false, message: "currencyId should be INR" })
+        }
+
+        // if (!validator.isValid(currencyFormat)) {
+        //     currencyFormat = currencySymbol('INR')
+        // }
+        // currencyFormat = currencySymbol('INR') //used currency symbol package to store INR symbol.
+
         if (typeof price != "number") {
             return res.status(400).send({ status: false, message: 'Enter a valid price' })
 
@@ -194,7 +208,7 @@ const update = async function (req, res) {
         let files = req.files;
         if (files && files.length > 0) {
             //upload to s3 and return true..incase of error in uploading this will goto catch block( as rejected promise)
-            var uploadedFileURL = await uploadFile(files[0]); // expect this function to take file as input and give url of uploaded file as output 
+            var uploadedFileURL = await aws.uploadFile(files[0]); // expect this function to take file as input and give url of uploaded file as output 
             //   res.status(201).send({ status: true, data: uploadedFileURL });
         }
         const ProductData = {

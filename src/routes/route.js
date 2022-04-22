@@ -10,7 +10,7 @@ const moddilewares=require("../middlewares/auth")
 
 
 // User APIs
-router.post('/User',userController.registerUser)
+router.post('/register',userController.registerUser)
 router.post('/login', userController.login)
 router.get('/user/:userId/profile', moddilewares.Auth, userController.GetUsers)
 router.put('/user/:userId/profile', moddilewares.Auth, userController.update)

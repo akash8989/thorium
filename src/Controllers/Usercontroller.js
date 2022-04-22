@@ -175,6 +175,7 @@ const login = async function (req, res) {
 const GetUsers = async function (req, res) {
     try {
         console.log(req.user)
+    
         if (req.user.userId != req.params.userId) {
             return res.status(401).send({ status: false, msg: "userId does not match" })
         }
